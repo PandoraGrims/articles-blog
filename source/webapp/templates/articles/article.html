@@ -18,6 +18,12 @@
         <h6 class="card-subtitle mb-2 text-body-secondary">{{ article.author.username }}</h6>
         <p class="card-text">{{ article.content }}</p>
         <p class="card-text">дата изменения: {{ article.updated_at }}</p>
+
+        <div class="card-text py-2">
+            <button class="like-button btn btn-outline-danger" data-type="article" data-id="{{ article.pk }}"><i
+                    class="bi bi-heart-pulse" style="font-size: 25px"></i></button>
+            <p><i class="bi bi-person-heart"></i>--><span class="like-count">{{ article.like_count }}</span></p>
+        </div>
     </div>
 
     <h2>Коментарии</h2>
@@ -25,6 +31,11 @@
         <div>
             <h6>{{ comment.author.username }}</h6>
             <p>{{ comment.text }}</p>
+            <div class="comment-text py-2">
+                <button class="like-button btn btn-outline-danger" data-type="comment" data-id="{{ comment.pk }}"><i
+                        class="bi bi-heart-pulse" style="font-size: 25px"></i></button>
+                <p><i class="bi bi-person-heart"></i>--><span class="like-count">{{ comment.like_count }}</span></p>
+            </div>
         </div>
         <div class="btn-group" role="group">
             <a href="{% url "webapp:comment_update" comment.pk %}"
