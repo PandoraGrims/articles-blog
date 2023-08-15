@@ -1,9 +1,11 @@
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from webapp.forms import CommentForm
-from webapp.models import Article, Comment
+from webapp.models import Article, Comment, CommentLike
 
 
 class CommentCreateView(CreateView):
@@ -41,3 +43,19 @@ class CommentDeleteView(DeleteView):
 
     def get(self, request, *args, **kwargs):
         return self.delete(request, *args, **kwargs)
+
+
+class ToggleCommentLikeView(View):
+    def post(self, request, pk: int):
+        comment = get_object_or_404(Comment, pk=pk)
+        user = request.user
+        liked = CommentLike.objects.filter(comment=comment, user=user).exists()
+
+        if liked:
+            CommentLike.objects.filter(comment=comment, user=user).delete()
+        else:
+            CommentLike.objects.create(comment=comment, user=user)
+
+        like_count = CommentLike.objects.filter(comment=comment).count()
+
+        return JsonResponse({'count': like_count, 'liked': not liked})

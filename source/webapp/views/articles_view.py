@@ -1,14 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.html import urlencode
 
 from django.urls import reverse_lazy
+from django.views import View
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from webapp.forms import ArticleForm, SearchForm
-from webapp.models import Article
+from webapp.models import Article, ArticleLike
 
 
 class ArticleListView(ListView):
@@ -74,7 +77,6 @@ class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
     template_name = "articles/delete_article.html"
     success_url = reverse_lazy("webapp:index")
 
-
     def has_permission(self):
         return self.request.user.has_perm("webapp.delete_article") or \
             self.get_object().author == self.request.user
@@ -88,3 +90,21 @@ class ArticleDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['comments'] = self.object.comments.order_by("-updated_at")
         return context
+
+
+class ToggleArticleLikeView(View):
+    def post(self, request, pk: int):
+        article = get_object_or_404(Article, pk=pk)
+        user = request.user
+        liked = ArticleLike.objects.filter(article=article, user=user).exists()
+
+        if liked:
+            ArticleLike.objects.filter(article=article, user=user).delete()
+        else:
+            ArticleLike.objects.create(article=article, user=user)
+
+        like_count = ArticleLike.objects.filter(article=article).count()
+
+        return JsonResponse({'count': like_count, 'liked': not liked})
+
+
