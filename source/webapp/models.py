@@ -55,3 +55,25 @@ class Tag(AbstractModel):
         db_table = "tags"
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
+
+
+class ArticleLike(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='article_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "articlelikes"
+        verbose_name = "ЛайкСтат"
+        verbose_name_plural = "ЛайкиСтат"
+
+
+class CommentLike(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='comment_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "commentlikes"
+        verbose_name = "ЛайкКом"
+        verbose_name_plural = "ЛайкиКом"
