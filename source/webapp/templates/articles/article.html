@@ -31,11 +31,14 @@
         <div>
             <h6>{{ comment.author.username }}</h6>
             <p>{{ comment.text }}</p>
-            <div class="comment-text py-2">
-                <button class="like-button btn btn-outline-danger" data-type="comment" data-id="{{ comment.pk }}"><i
-                        class="bi bi-heart-pulse" style="font-size: 25px"></i></button>
-                <p><i class="bi bi-person-heart"></i>--><span class="like-count">{{ comment.commentlike_set.count }}</span></p>
-            </div>
+            {% if request.user.is_authenticated %}
+                <div class="comment-text py-2">
+                    <button class="like-button btn btn-outline-danger" data-type="comment" data-id="{{ comment.pk }}"><i
+                            class="bi bi-heart-pulse" style="font-size: 25px"></i></button>
+                    <p><i class="bi bi-person-heart"></i>--><span
+                            class="like-count">{{ comment.commentlike_set.count }}</span></p>
+                </div>
+            {% endif %}
         </div>
         <div class="btn-group" role="group">
             <a href="{% url "webapp:comment_update" comment.pk %}"
